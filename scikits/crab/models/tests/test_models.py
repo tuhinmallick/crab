@@ -79,7 +79,7 @@ def test_basic_methods_MatrixPreferenceDataModel():
     assert_equals([('Just My Luck', 3.0), ('Lady in the Water', 2.5),
              ('Snakes on a Plane', 3.5), ('Superman Returns', 3.5),
              ('The Night Listener', 3.0), ('You, Me and Dupree', 2.5)], model['Marcel Caraciolo'])
-    elements = [pref  for pref in model]
+    elements = list(model)
     assert_array_equal([('Lady in the Water', 2.5), ('Snakes on a Plane', 3.0), \
          ('Superman Returns', 3.5), ('The Night Listener', 4.0)], elements[0][1])
 
@@ -98,7 +98,7 @@ def test_basic_methods_MatrixPreferenceDataModel():
     assert_equals(5.0, model.maximum_preference_value())
     assert_equals(1.0, model.minimum_preference_value())
     assert_equals([(1, 2.5), (2, 3.5), (3, 5.0), (4, 2.0), (5, 4.5), (6, 1.5), (7, 2.0)], model[1])
-    elements = [pref  for pref in model]
+    elements = list(model)
     assert_array_equal([(1, 2.5), (2, 3.5), (3, 5.0), (4, 2.0), (5, 4.5), (6, 1.5), (7, 2.0)],
             elements[0][1])
     assert("MatrixPreferenceDataModel (8 by 8)" in model.__str__())
@@ -242,7 +242,7 @@ def test_basic_methods_MatrixBooleanPrefDataModel():
     assert_array_equal(['Just My Luck', 'Lady in the Water',
              'Snakes on a Plane', 'Superman Returns',
              'The Night Listener', 'You, Me and Dupree'], model['Marcel Caraciolo'])
-    elements = [pref  for pref in model]
+    elements = list(model)
     assert_array_equal(['Lady in the Water', 'Snakes on a Plane', \
          'Superman Returns', 'The Night Listener'], elements[0][1])
     assert("MatrixBooleanPrefDataModel (8 by 6)" in model.__str__())
@@ -259,7 +259,7 @@ def test_basic_methods_MatrixBooleanPrefDataModel():
     assert_equals(1.0, model.maximum_preference_value())
     assert_equals(0.0, model.minimum_preference_value())
     assert_array_equal([1, 2, 3, 4, 5, 6, 7], model[1])
-    elements = [pref  for pref in model]
+    elements = list(model)
     assert_array_equal([1, 2, 3, 4, 5, 6, 7],
             elements[0][1])
     assert("MatrixBooleanPrefDataModel (8 by 8)" in model.__str__())

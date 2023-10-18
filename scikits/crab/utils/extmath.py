@@ -14,7 +14,7 @@ except AttributeError:
         taken <r> at a time. Order is not significant. If <r> is not given,
         the entire sequence is returned.
         """
-        if r == None:
+        if r is None:
             r = len(seq)
         if r <= 0:
             yield []
@@ -32,9 +32,7 @@ except AttributeError:
         # ripped from http://www.joelbdalley.com/page.pl?38
         # Ensure that n is a Natural number
         n = abs(int(x))
-        if n < 1:
-            n = 1
-
+        n = max(n, 1)
         # Store n! in variable x
         x = 1
 

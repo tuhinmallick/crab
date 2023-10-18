@@ -290,10 +290,7 @@ class MatrixFactorBasedRecommender(SVDRecommender):
 
         candidate_items = self.all_other_items(user_id)
 
-        recommendable_items = self._top_matches(user_id, \
-                 candidate_items, how_many)
-
-        return recommendable_items
+        return self._top_matches(user_id, candidate_items, how_many)
 
     def estimate_preference(self, user_id, item_id, **params):
         '''
@@ -328,8 +325,7 @@ class MatrixFactorBasedRecommender(SVDRecommender):
         if self.capper:
             max_p = self.model.maximum_preference_value()
             min_p = self.model.minimum_preference_value()
-            estimated = max_p if estimated > max_p else min_p \
-                     if estimated < min_p else estimated
+            estimated = max_p if estimated > max_p else max(estimated, min_p)
         return estimated
 
     def all_other_items(self, user_id, **params):
@@ -378,15 +374,14 @@ class MatrixFactorBasedRecommender(SVDRecommender):
 
         sorted_preferences = np.lexsort((preferences,))[::-1]
 
-        sorted_preferences = sorted_preferences[0:how_many] \
-             if how_many and sorted_preferences.size > how_many \
-                else sorted_preferences
+        sorted_preferences = (
+            sorted_preferences[:how_many]
+            if how_many and sorted_preferences.size > how_many
+            else sorted_preferences
+        )
 
-        if self.with_preference:
-            top_n_recs = [(target_ids[ind], \
-                     preferences[ind]) for ind in sorted_preferences]
-        else:
-            top_n_recs = [target_ids[ind]
-                 for ind in sorted_preferences]
-
-        return top_n_recs
+        return (
+            [(target_ids[ind], preferences[ind]) for ind in sorted_preferences]
+            if self.with_preference
+            else [target_ids[ind] for ind in sorted_preferences]
+        )

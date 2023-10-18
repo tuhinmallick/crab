@@ -26,7 +26,7 @@ def check_arrays(*arrays, **options):
     if options:
         raise ValueError("Unexpected kw arguments: %r" % options.keys())
 
-    if len(arrays) == 0:
+    if not arrays:
         return None
 
     first = arrays[0]

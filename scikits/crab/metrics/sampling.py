@@ -71,17 +71,16 @@ class SplitSampling(object):
         n_train = ceil(self.evaluation_fraction * self.n)
         #random partition
         permutation = rng.permutation(self.n) if permutation \
-                             else np.arange(self.n)
+                                 else np.arange(self.n)
         ind_train = permutation[-n_train:]
         ind_ignore = permutation[:-n_train]
         if self.indices:
             return ind_train, ind_ignore
-        else:
-            train_mask = np.zeros(self.n, dtype=np.bool)
-            train_mask[ind_train] = True
-            test_mask = np.zeros(self.n, dtype=np.bool)
-            test_mask[ind_ignore] = True
-            return train_mask, test_mask
+        train_mask = np.zeros(self.n, dtype=np.bool)
+        train_mask[ind_train] = True
+        test_mask = np.zeros(self.n, dtype=np.bool)
+        test_mask[ind_ignore] = True
+        return train_mask, test_mask
 
     def __repr__(self):
         return ('%s(%d, evaluation_fraction=%s, indices=%s, '
