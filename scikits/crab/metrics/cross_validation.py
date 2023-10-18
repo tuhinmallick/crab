@@ -290,7 +290,7 @@ class ShuffleSplit(object):
     def __iter__(self):
         rng = self.random_state = check_random_state(self.random_state)
         n_test = ceil(self.test_fraction * self.n)
-        for i in range(self.n_iterations):
+        for _ in range(self.n_iterations):
             #random partition
             permutation = rng.permutation(self.n)
             ind_train = permutation[:-n_test]

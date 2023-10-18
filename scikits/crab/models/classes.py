@@ -91,7 +91,7 @@ class MatrixPreferenceDataModel(BaseDataModel):
         return self.preferences_from_user(user_id)
 
     def __iter__(self):
-        for index, user in enumerate(self.user_ids()):
+        for user in self.user_ids():
             yield user, self[user]
 
     def __len__(self):
@@ -168,9 +168,7 @@ class MatrixPreferenceDataModel(BaseDataModel):
             #user_id not found
             raise UserNotFoundError
 
-        preferences = self.index[user_id_loc]
-
-        return preferences
+        return self.index[user_id_loc]
 
     def preferences_from_user(self, user_id, order_by_id=True):
         '''
@@ -481,7 +479,7 @@ class MatrixBooleanPrefDataModel(BaseDataModel):
         return self.preferences_from_user(user_id)
 
     def __iter__(self):
-        for index, user in enumerate(self.user_ids()):
+        for user in self.user_ids():
             yield user, self[user]
 
     def __len__(self):
@@ -506,15 +504,15 @@ class MatrixBooleanPrefDataModel(BaseDataModel):
         self._item_ids.sort()
 
         logger.info("creating matrix for %d users and %d items" % \
-                    (self._user_ids.size, self._item_ids.size))
+                        (self._user_ids.size, self._item_ids.size))
 
         self.index = np.empty(shape=(self._user_ids.size, self._item_ids.size), dtype=bool)
         for userno, user_id in enumerate(self._user_ids):
             if userno % 2 == 0:
                 logger.debug("PROGRESS: at user_id #%i/%i" %  \
-                    (userno, self._user_ids.size))
+                        (userno, self._user_ids.size))
             for itemno, item_id in enumerate(self._item_ids):
-                r = True if item_id in self.dataset[user_id] else False
+                r = item_id in self.dataset[user_id]
                 self.index[userno, itemno] = r
 
     def user_ids(self):
@@ -550,9 +548,7 @@ class MatrixBooleanPrefDataModel(BaseDataModel):
             #user_id not found
             raise UserNotFoundError
 
-        preferences = self.index[user_id_loc]
-
-        return preferences
+        return self.index[user_id_loc]
 
     def preferences_from_user(self, user_id, order_by_id=True):
         '''
@@ -604,8 +600,7 @@ class MatrixBooleanPrefDataModel(BaseDataModel):
         items_from_user : numpy array of shape [item_id,..]
                  Return IDs of items user expresses a preference for
         '''
-        preferences = self.preferences_from_user(user_id)
-        return preferences
+        return self.preferences_from_user(user_id)
 
     def preferences_for_item(self, item_id, order_by_id=True):
         '''
@@ -710,18 +705,18 @@ class MatrixBooleanPrefDataModel(BaseDataModel):
         shape = matrix.shape
         for i in range(shape[0]):
             for j in range(shape[1]):
-                v = matrix[i, j]
-                if not v:
-                    s += "---".center(cellWidth)
-                else:
+                if v := matrix[i, j]:
                     exp = np.log(abs(v))
                     if abs(exp) <= 4:
-                        if exp < 0:
-                            s += ("%9.6f" % v).ljust(cellWidth)
-                        else:
-                            s += ("%9.*f" % (6, v)).ljust(cellWidth)
+                        s += (
+                            ("%9.6f" % v).ljust(cellWidth)
+                            if exp < 0
+                            else ("%9.*f" % (6, v)).ljust(cellWidth)
+                        )
                     else:
                         s += ("%9.2e" % v).ljust(cellWidth)
+                else:
+                    s += "---".center(cellWidth)
             s += "\n"
         return s[:-1]
 

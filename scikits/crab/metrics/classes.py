@@ -230,7 +230,7 @@ class CfEvaluator(RecommenderEvaluator):
             preferences = recommender.model.preferences_from_user(user_id)
 
             sampling_eval = check_sampling(sampling_ratings, \
-                                             len(preferences))
+                                                 len(preferences))
             train_set, test_set = sampling_eval.split(indices=True,
                                         permutation=permutation)
 
@@ -241,14 +241,17 @@ class CfEvaluator(RecommenderEvaluator):
                 testing_set[user_id] = [preferences[idx]
                              for idx in test_set] if preferences else []
             else:
-                training_set[user_id] = dict(((preferences[idx], 1.0)
-                             for idx in train_set)) if preferences else {}
+                training_set[user_id] = (
+                    {preferences[idx]: 1.0 for idx in train_set}
+                    if preferences
+                    else {}
+                )
                 testing_set[user_id] = [(preferences[idx], 1.0)
                              for idx in test_set] if preferences else []
 
         #Evaluate the recommender.
         recommender_training = self._build_recommender(training_set, \
-                                recommender)
+                                    recommender)
 
         real_preferences = []
         estimated_preferences = []
@@ -299,35 +302,35 @@ class CfEvaluator(RecommenderEvaluator):
             relevant_item_ids = [item_id for item_id, preference
                                     in preferences[:at]]
 
-            if len(relevant_item_ids) == 0:
+            if not relevant_item_ids:
                 continue
 
             training_set = {}
             for other_user_id in recommender.model.user_ids():
                 preferences_other_user = \
-                    recommender.model.preferences_from_user(other_user_id)
+                        recommender.model.preferences_from_user(other_user_id)
 
                 if not recommender.model.has_preference_values():
                     preferences_other_user = [(preference, 1.0)
                                      for preference in preferences_other_user]
                 if other_user_id == user_id:
-                    preferences_other_user = \
-                        [pref for pref in preferences_other_user \
-                            if pref[0] not in relevant_item_ids]
-
-                    if preferences_other_user:
+                    if preferences_other_user := [
+                        pref
+                        for pref in preferences_other_user
+                        if pref[0] not in relevant_item_ids
+                    ]:
                         training_set[other_user_id] = \
-                            dict(preferences_other_user)
+                                dict(preferences_other_user)
                 else:
                     training_set[other_user_id] = dict(preferences_other_user)
 
             #Evaluate the recommender
             recommender_training = self._build_recommender(training_set, \
-                        recommender)
+                            recommender)
 
             try:
                 preferences = \
-                    recommender_training.model.preferences_from_user(user_id)
+                        recommender_training.model.preferences_from_user(user_id)
                 preferences = list(preferences)
                 if not preferences:
                     continue
@@ -440,11 +443,10 @@ class CfEvaluator(RecommenderEvaluator):
 
             for idx in train_set:
                 user_id, pref = total_ratings[idx]
+                training_set.setdefault(user_id, {})
                 if recommender.model.has_preference_values():
-                    training_set.setdefault(user_id, {})
                     training_set[user_id][pref[0]] = pref[1]
                 else:
-                    training_set.setdefault(user_id, {})
                     training_set[user_id][pref] = 1.0
 
             for idx in test_set:
@@ -458,7 +460,7 @@ class CfEvaluator(RecommenderEvaluator):
 
             #Evaluate the recommender.
             recommender_training = self._build_recommender(training_set, \
-                                    recommender)
+                                        recommender)
 
             real_preferences = []
             estimated_preferences = []
@@ -523,36 +525,36 @@ class CfEvaluator(RecommenderEvaluator):
                 relevant_item_ids = [item_id for item_id, preference
                                         in preferences[:at]]
 
-                if len(relevant_item_ids) == 0:
+                if not relevant_item_ids:
                     continue
 
                 #Build the training set.
                 training_set = {}
                 for other_user_id in recommender.model.user_ids():
                     preferences_other_user = \
-                        recommender.model.preferences_from_user(other_user_id)
+                            recommender.model.preferences_from_user(other_user_id)
 
                     if not recommender.model.has_preference_values():
                         preferences_other_user = [(preference, 1.0)
                                          for preference in preferences_other_user]
                     if other_user_id == user_id:
-                        preferences_other_user = \
-                            [pref for pref in preferences_other_user \
-                                if pref[0] not in relevant_item_ids]
-
-                        if preferences_other_user:
+                        if preferences_other_user := [
+                            pref
+                            for pref in preferences_other_user
+                            if pref[0] not in relevant_item_ids
+                        ]:
                             training_set[other_user_id] = \
-                                dict(preferences_other_user)
+                                    dict(preferences_other_user)
                     else:
                         training_set[other_user_id] = dict(preferences_other_user)
 
                 #Evaluate the recommender
                 recommender_training = self._build_recommender(training_set, \
-                            recommender)
+                                recommender)
 
                 try:
                     preferences = \
-                        recommender_training.model.preferences_from_user(user_id)
+                            recommender_training.model.preferences_from_user(user_id)
                     preferences = list(preferences)
                     if not preferences:
                         continue

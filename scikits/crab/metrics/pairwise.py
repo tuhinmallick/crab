@@ -171,15 +171,12 @@ def jaccard_coefficient(X, Y):
 
     #TODO: Check if it is possible to optimize this function
     result = []
-    i = 0
-    for arrayX in X:
+    for i, arrayX in enumerate(X):
         result.append([])
         for arrayY in Y:
             n_XY = np.intersect1d(arrayY, arrayX).size
             result[i].append(n_XY / (float(len(arrayX)) + len(arrayY) - n_XY))
         result[i] = np.array(result[i])
-        i += 1
-
     #XY = np.array([ [np.intersect1d(y,x).size / (float(len(x)) + len(y) - np.intersect1d(y,x).size)]  for y in Y  for x in X]) 
     return np.array(result)
 
@@ -285,15 +282,12 @@ def sorensen_coefficient(X, Y):
     #XY = np.array([np.intersect1d(x,y).size for y in Y  for x in X])
 
     XY = []
-    i = 0
-    for arrayX in X:
+    for i, arrayX in enumerate(X):
         XY.append([])
         for arrayY in Y:
             XY[i].append(2 * np.intersect1d(arrayX, arrayY).size / float(len(arrayX) + len(arrayY)))
 
         XY[i] = np.array(XY[i])
-        i += 1
-
     XY = np.array(XY)
 
     return XY
@@ -345,15 +339,12 @@ def tanimoto_coefficient(X, Y):
 
     #TODO: Check if it is possible to optimize this function
     result = []
-    i = 0
-    for arrayX in X:
+    for i, arrayX in enumerate(X):
         result.append([])
         for arrayY in Y:
             n_XY = np.intersect1d(arrayY, arrayX).size
             result[i].append(n_XY / (float(len(arrayX)) + len(arrayY) - n_XY))
         result[i] = np.array(result[i])
-        i += 1
-
     #XY = np.array([ [np.intersect1d(y,x).size / (float(len(x)) + len(y) - np.intersect1d(y,x).size)]  for y in Y  for x in X]) 
 
     return np.array(result)
@@ -458,9 +449,7 @@ def spearman_coefficient(X, Y):
 
     result = []
 
-    #TODO: Check if it is possible to optimize this function
-    i = 0
-    for arrayX in X:
+    for i, arrayX in enumerate(X):
         result.append([])
         for arrayY in Y:
             Y_keys = [key for key, value in arrayY]
@@ -475,10 +464,8 @@ def spearman_coefficient(X, Y):
             if n == 0:
                 result[i].append(0.0)
             else:
-                result[i].append(1.0 - ((6.0 * sumDiffSq) / (n * (n * n - 1))))
+                result[i].append(1.0 - 6.0 * sumDiffSq / (n * (n**2 - 1)))
         result[i] = np.asanyarray(result[i])
-        i += 1
-
     return np.asanyarray(result)
 
 
@@ -525,10 +512,7 @@ def loglikehood_coefficient(n_items, X, Y):
     # call this function.
 
     def safeLog(d):
-        if d <= 0.0:
-            return 0.0
-        else:
-            return np.log(d)
+        return 0.0 if d <= 0.0 else np.log(d)
 
     def logL(p, k, n):
         return k * safeLog(p) + (n - k) * safeLog(1.0 - p)
